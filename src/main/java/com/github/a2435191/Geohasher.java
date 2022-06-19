@@ -145,12 +145,13 @@ public final class Geohasher {
         System.out.println("Today's date: " + DASH_FORMAT.format(today.getTime()));
 
         final BigDecimal dowOpening = dowOpeningFuture.join();
-        System.out.println("Most Dow opening: " + dowOpening);
+        System.out.println("Most recent Dow opening: " + dowOpening);
 
 
         Coordinate destination = geoHash(today, dowOpening, new Coordinate(x, y), 14);
         System.out.println("Your geohash:");
-        System.out.println(destination.toSimpleString(5));
+        System.out.println(destination.toSimpleString(5) + " " + destination.toGoogleMapsURL());
+
     }
 
 
@@ -196,12 +197,18 @@ public final class Geohasher {
     public record Coordinate(@NotNull BigDecimal x, @NotNull BigDecimal y) {
         /**
          * Get a simple coordinate representation.
-         * @param rounding How many digits to round the mantissa to.
+         * @param rounding How many digits to round the significant digits to.
          * @return Simple coordinate representation string.
          */
         public @NotNull String toSimpleString(int rounding) {
             MathContext mc = new MathContext(rounding, RoundingMode.HALF_UP);
             return "(" + x.round(mc) + ", " + y.round(mc) + ")";
+        }
+
+        public @NotNull String toGoogleMapsURL() {
+            return String.format(
+                "https://www.google.com/maps/place/%s,%s",
+                x, y);
         }
     }
 }
